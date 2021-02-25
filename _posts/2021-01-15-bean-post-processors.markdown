@@ -2,7 +2,7 @@
 layout: post
 title:  "Spring BeanFactoryPostProcessor and BeanPostProcessor"
 date:   2021-01-09 12:18:33 +0100
-categories: jekyll update
+categories: Spring Certification
 ---
 
 These two classes can be used to get into the spring bean definition registration and initialization.

@@ -1,0 +1,107 @@
+---
+layout: post
+title:  "Proxy in Spring JDK vs CGLIB"
+date:   2021-02-24 12:18:33 +0100
+categories: Spring Certification
+---
+
+To be able to deal with `scopes` , `transactions` and other mechanisms related to the beans creation, spring has to use proxies to accomplish that.
+There are 2 ways that spring deals with proxy
+
+ * JDK Proxy
+ * CGLIB
+ 
+ 
+### JDK Proxy
+
+This is the default approach but there are some limitations.
+
+* Requires proxy object to implement the interface
+* Only interface methods will be proxied
+* No support for self-invocation
+
+To make it more clear you can see how this can be done manually. so you understand
+
+
+```java
+
+ItemsRepository itemsRepository = (PersonDao) Proxy.newProxyInstance(
+                ItemsRepository.class.getClassLoader(), ItemsRepositoryImpl.class.getInterfaces(),
+                new ItemsRepositoryInvocationHandler(
+                        new ItemsRepositoryImpl()
+                )
+        );
+
+```
+
+
+Using the approach above you create a proxy which will intercept the invocations using the class `ItemsRepositoryInvocationHandler`. You can check the class below:
+
+
+```java
+
+public class ItemsRepositoryInvocationHandler implements InvocationHandler {
+
+    private final ItemsRepository target;
+
+    public ItemsRepositoryInvocationHandler(ItemsRepository target) {
+        this.target = target;
+    }
+
+    @Override
+    public Object invoke(Object obj, Method method, Object[] args) throws Throwable {
+        System.out.println("before execution " + method.getName());
+        Object result = method.invoke(target, args);
+        System.out.println("after  execution " + method.getName());
+        return result;
+    }
+}
+
+
+```
+
+
+### CGLIB
+
+If you are not implementing an interface, spring will pick the CGLIB approach to create your proxies, but there are also some limitations:
+
+
+* Does not work for final classes
+* Does not work for final methods
+* No support for self-invocation
+
+One example of CGLIB code manually implemented you can see below
+
+
+```java
+
+
+ public static void main(String[] args) {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setCallback(new ItemsRepositoryMethodInterceptor());
+        enhancer.setSuperclass(ItemsRepository.class);
+        ItemsRepository itemsRepository = (ItemsRepository) enhancer.create();
+
+        Item item = itemsRepository.findById(5);
+        itemsRepository.save(item);
+    }
+
+```
+
+And the interceptor .
+
+```java
+
+public class DepartmentDaoMethodInterceptor implements MethodInterceptor {
+    @Override
+    public Object intercept(Object object, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+        System.out.println("before call" + method.getName());
+        Object result = methodProxy.invokeSuper(object, args);
+        System.out.println("after call" + method.getName());
+        return result;
+    }
+}
+
+
+
+```

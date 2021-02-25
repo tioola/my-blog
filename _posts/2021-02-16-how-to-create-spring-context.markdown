@@ -2,7 +2,7 @@
 layout: post
 title:  "Ways of creating your Spring Context"
 date:   2021-02-16 12:18:33 +0100
-categories: jekyll update
+categories: Spring Certification
 ---
 
 There are 3 ways of creating your spring context.
