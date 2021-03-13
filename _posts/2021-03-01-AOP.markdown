@@ -1,0 +1,60 @@
+---
+layout: post
+title:  "What is AOP"
+date:   2021-03-01 12:18:33 +0100
+categories: Spring Certification
+---
+
+AOP means Aspect Oriented Programing. Which is a paradigm that complements OOP so it cannot be considered a replacement of OOP.
+And it is mostly used for `Cross-cutting concearns`.
+
+#### What is a cross-cutting concern?
+
+A cross cutting concern is applicable throughout the application, so it means the entire application. Therefore, some requirements take more advantage of
+AOP.
+
+* Security
+* Logging
+* Caching
+* Transaction
+* Monitoring
+
+#### Where you should not apply AOP
+
+
+You should never apply AOP for the business logic of your domain. This would cause a lot of logic leak and would be really hard to read.
+
+Therefore, the main usage of the AOP is to separate those cross-cutting concerns that are more related to the infrastructure of the application from the Business logic.
+
+
+#### Example of aspect
+
+One simple example of usage is creating one Aspect which can be used to log the amount of time spent per execution for the 
+methods with the annotation `@LogPerformance`
+
+
+```java
+
+@Aspect
+@Component
+public class LogPerformanceAspect {
+
+    private Logger logger = Logger.getLogger("performance.log");
+
+    @Around("@annotation(com.spring.examples.annotations.LogPerformance)")
+    public Object logPerformance(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
+        try {
+            return proceedingJoinPoint.proceed();
+        } finally {
+            long finishTime = System.currentTimeMillis();
+            Duration duration = Duration.ofMillis(finishTime - startTime);
+
+            logger.info(String.format("Duration of %s was %s", proceedingJoinPoint.getSignature(), duration));
+        }
+    }
+}
+
+```
+
+

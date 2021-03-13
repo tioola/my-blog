@@ -1,0 +1,56 @@
+---
+layout: post
+title:  "SpEL introduction"
+date:   2021-02-28 12:18:33 +0100
+categories: Spring Certification
+---
+
+Spring SpEL is used to parse expressions through your @Value or even standalone. Another thing that you should keep in mind is that your expressions can be
+evaluated in `runtime` or you can ask SpEL to work in the compile mode to increase performance, although you will lose functionalities if you do that.
+
+With SpEL you can also access beans and call methods inside of it. Let's take the example below:
+
+```java
+
+ExpressionParser parser = new SpelExpressionParser();
+System.out.println(parser.parseExpression("new String('Name to upper').toUpperCase()").getValue());
+
+```
+
+You could also access your beans through the `Spel` like below:
+
+
+```java
+
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+
+        StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
+        evaluationContext.setBeanResolver(new BeanFactoryResolver(context));
+
+        ExpressionParser parser = new SpelExpressionParser();
+
+        System.out.println(
+                parser.parseExpression("@beanOne.firstName").getValue(evaluationContext)
+        );
+        System.out.println(
+                parser.parseExpression("@beanOne.amountAvailable * 2").getValue(evaluationContext)
+        );
+        
+```
+
+#### SpEL examples
+
+* Static Fields > T(com.spring.example.Item).DEFAULT_CODE
+* Static Methods > T(com.spring.example.Item).getDefaultCode()
+* Spring Bean Property > @beanOne.itemCode
+* Spring bean Method > @beanOne.getItemCode()
+* Variables > #personName
+* Object property assigned to SpEL variables > #person.name
+* Object method assigned to SpEL variables > person.getName()
+* Environment Properties > environment['app.item.default.code.property']
+* System Properties > systemProperties['app.vm.property']
+* System Environment Properties > systemEnvironment['JAVA_HOME']
+
+
+
+ 

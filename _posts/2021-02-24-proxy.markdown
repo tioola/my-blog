@@ -68,6 +68,7 @@ If you are not implementing an interface, spring will pick the CGLIB approach to
 
 * Does not work for final classes
 * Does not work for final methods
+* Only public/protected/package methods will be proxied, private methods are not proxied
 * No support for self-invocation
 
 One example of CGLIB code manually implemented you can see below

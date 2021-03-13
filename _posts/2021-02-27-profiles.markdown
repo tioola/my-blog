@@ -1,0 +1,104 @@
+---
+layout: post
+title:  "@Profile annotation"
+date:   2021-02-27 12:18:33 +0100
+categories: Spring Certification
+---
+
+The profile annotation can be used when you have multiple implementations of the same bean which might be injected depending of the activated profile in the application.
+
+Profiles can be used at:
+
+* @Component level
+* @Configuration level
+* @Bean method level
+
+
+### Declaring a profile
+
+One simple example is imagine that you have a Repository like below and 2 implementations one for file and another for database
+
+```java
+
+public interface ItemRepository{ 
+  
+    void save(Item item);
+}
+
+
+@Repository
+@Profile("file")
+public class FileItemRepository{
+    void save(Item item){
+     System.out.println("Saving in the filesystem");
+   }       
+  
+}
+
+
+@Repository
+@Profile("database")
+public class DatabaseItemRepository{
+    void save(Item item){
+     System.out.println("Saving in database");
+   }       
+  
+}
+
+```
+ 
+**Note tha you can also use negation sign (!) if you want to specify for example only if profile not database = !database**
+ 
+### Activating a profile
+
+
+A profile can be activated in several ways
+
+#### Programmatically
+
+While starting up your standalone context you can call `setActiveProfiles`
+
+```java
+    
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        // Activate profile
+        context.getEnvironment().setActiveProfiles("file");
+      
+
+```
+
+or using `Spring Boot` like the example below:
+
+
+```java
+
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(Runner.class)
+                .profiles("database")
+                .run(args);
+    }
+
+```
+
+#### Vm properties
+
+You can also use VM properties to activate it like
+
+`-Dspring.profiles.active=database`
+
+
+#### JUnit tests
+
+You can activate your profiles in a JUnit test using the following annotation `@ActiveProfiles`
+
+
+```java
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = ApplicationConfig.class)
+@ActiveProfiles("database")
+public class ApplicationTest {
+   
+}
+
+```
