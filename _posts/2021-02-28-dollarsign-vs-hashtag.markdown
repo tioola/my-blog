@@ -9,7 +9,7 @@ The main difference between `$` and # is that:
 
 ### `$`
 
-`$` is a compact way to access the [Environment]({% post_url 2021-02-28-enviroment-abstraction.markdown %}) properties.
+`$` is a compact way to access the Environment properties.
 But on the other hand you can't execute a SpEL expression like you can do with `#`.
 
 One example is 
