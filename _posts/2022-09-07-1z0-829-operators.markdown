@@ -1,0 +1,115 @@
+---
+layout: post
+title:  "[1z0-829] 2-Builduing blocks highlights"
+date:   2022-09-06 12:18:33 +0100
+categories: 1Z0-829
+---
+
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+
+---
+
+* The **bitwise complement operator (~)** Flips all of the 0s and 1s in a number. It vsn only be applied  to integer numeric types such as byte, short, char, int. Like the example below
+
+```java
+
+int value = 3; // Stored as 0011
+int complement = ~value; // Stored as 1100
+System.out.println(value); // 3
+System.out.println(complement)// -4
+
+// If you want to know what would be the bitwise complement you can follow the rule: Multiply it by negative one and then subtract one
+
+System.out.println(-1*value - 1);
+System.out.println(-1*complement - 1);
+
+```
+* Don`t forget that you can never use brackets [] instead of parenthesis to change the operators execution order. The example below does not compile:
+
+```java
+// This would never compile unless you switch from brackets to parentheses
+short robin = 3 + [(4*2) + 4]
+
+```
+
+* Numeric promotion happens based on a set of 4 rules
+  * If two values have different data types, Java will automaticcaly promote one of the values to the larger of the two data types.
+  * If one of the value is integral and the other is floating-point. Java will automatically promote the integral value to the floating-point value`s data type.
+  * Smaller data types, namely, **byte, short, and char**, are first promoted to int any time they are used with a Java binary arithmetic operator with a variable
+  * After all promotion has occurred and the operands have the same data type, the resulting value will have the same data type as its promoted operands.
+
+1st Rule example
+
+```java
+
+int x = 1;
+long y = 33;
+var z = x * y; // This will be a long variable
+
+```
+
+3rd rule example:
+
+```java
+
+short x = 10;
+short y = 3;
+var z = x*y; // This applied the 3rd rule and these values will be promoted to type int
+
+```
+
+* Remember that you have to be aware of primitive assignments, For the examples below we have sample of wrong assignments:
+
+
+```java
+
+int myfirst = 1.0; // We are trying to assign a double to an int ... this will not allow the code to compile
+short mysecond = 1921222; // It is out of the range of short
+int mythird = 9f; // This is trying to assign a float into an int variable which is not correct
+long myforth 192_301_398_193_810_323 // This does not compile because we are not adding the L for long in the end of it.
+
+```
+
+* Overflow and Underflow
+  * Overflow is when a number is large and it no longer fits in the current data type so it wraps it to the lowest negative type and counts up from there.
+  * Underflow on the other hand is when the number is too low to fit in the current data type.
+
+* You can cast to a smaller primitive type, check the exampe below;
+
+```java
+
+  long first = 10;
+  int second = 5;
+  second = first * second; // This code does not compile because the result is a long (applying 1st rule)
+
+
+ // To fix this you would need to do either this:
+  
+  
+  second = (int) (first * second)
+  
+// Or you could also use the compound operator
+//It is interesting that the compound operator already does the casting for you
+
+  second *= first;
+  
+  
+
+```
+
+* Remember that assigning a variable inside of an if is also valid 
+
+```java
+
+var myCondition = true;
+
+if(myCondition = false){
+    // Do not reach it.    
+}
+
+```
+
+* Remember how the Logical Operators ^ works = Value is true if one value is true and the other is false
+
+* The difference between % / %%  and | / || is that the version with double signs uses a circuit break and do not validate both side of the condition.
