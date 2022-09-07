@@ -86,8 +86,8 @@ public class Name {
 }
 ```
 * The inner block is used to limit the scope of the variables
-```java
 
+```java
 public void method1() {
         // Inner block
         {
@@ -96,7 +96,6 @@ public void method1() {
         }    
         // Can`t access name here.
 }
-
 ```
 
 * Fields and instance initializer blocks are run in the order in which they appear in the file
@@ -157,6 +156,7 @@ var fall = 2, autumn = 2
 ```
 * instance primivite values and local primitive values are different in terms of default: For instance it defaults but for local it doesn`t causing an error
 * Importing classes by class name takes precedents over wildcards therefore if you have 2 classes like below
+
 ```java
 package abc;
 class Myclass{}
@@ -170,8 +170,6 @@ import abc.*;
 import dfg.Myclass;
 
 //It will take always the Myclass of package dfg because it does not use wildcard
-
-
 ```
 
 * Although float can be declared with an F, it never prints the f in the sysout
