@@ -34,7 +34,7 @@ short robin = 3 + [(4*2) + 4]
 ```
 
 * Numeric promotion happens based on a set of 4 rules
-  * If two values have different data types, Java will automaticcaly promote one of the values to the larger of the two data types.
+  * If two values have different data types, Java will automatically promote one of the values to the larger of the two data types.
   * If one of the value is integral and the other is floating-point. Java will automatically promote the integral value to the floating-point value`s data type.
   * Smaller data types, namely, **byte, short, and char**, are first promoted to int any time they are used with a Java binary arithmetic operator with a variable
   * After all promotion has occurred and the operands have the same data type, the resulting value will have the same data type as its promoted operands.
@@ -46,6 +46,17 @@ short robin = 3 + [(4*2) + 4]
 int x = 1;
 long y = 33;
 var z = x * y; // This will be a long variable
+
+```
+
+also
+
+```java
+ 
+long myLongValue = 10;
+// This will not work since the value will be promoted to long and the variable is casted to long.
+int resultValue = 2 * myLongValue;
+//You could also cast this so solve this issue.
 
 ```
 
@@ -113,3 +124,43 @@ if(myCondition = false){
 * Remember how the Logical Operators ^ works = Value is true if one value is true and the other is false
 
 * The difference between % / %%  and | / || is that the version with double signs uses a circuit break and do not validate both side of the condition.
+
+* When you do some operation you automatically promote your value to int. but you can also declare it to bigger types example:
+
+```java
+byte firstValue = 5;
+short secondValue = 10;
+
+//These will work
+int result = firstValue + secondValue;
+long result = firstValue + secondValue;
+double result = firstValue + secondValue;
+
+```
+
+* Remember that if you return a float or a double in a type int it will not compile.
+
+```java
+
+  //This works
+  public double sum(int value1, int value2) {
+          return value1 + value2;
+  }
+  
+  //This does not work
+  public long sum(double value1, double value2) {
+          return value1 + value2;
+  }
+
+```
+
+* Pay attention in situations that are tricky like below:
+
+```java
+int pig = (short) 4;
+pig = pig++;
+
+// Note that the pig value won`t be 5, it will be actually 4 since we reassign the value of the post-increment operator
+```
+
+* The ! operator cannot be used in numeric values

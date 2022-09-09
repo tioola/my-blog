@@ -1,18 +1,18 @@
 ---
 layout: post
-title:  "[1z0-829] 1st Builduing blocks highlights"
+title:  "[1z0-829] 2-Operators"
 date:   2022-09-06 12:18:33 +0100
 categories: 1Z0-829
 ---
-
-These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
-You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context.
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
 
 * An object is often referred to as an instance.
 * A reference is a variable that points to an object (in heap)
 * Variables hold the state of the program and methods operate on that state
 * A top-level type is a data structure that can be defined idependently **within** a source file
-  * The majority of time we work with one class inside of the source file. This class will be always the top-level Type
+* The majority of time we work with one class inside of the source file. This class will be always the top-level Type
 * You can put two types in the same file. When you do so **at most one** of the top-level types in the file is allowed to be public
 * If you do have a public type it needs to match the filename.
 * Each source file can contain only one public class
