@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[1z0-829] 2-Operators"
+title:  "[1z0-829] 1-Building blocks"
 date:   2022-09-06 12:18:33 +0100
 categories: 1Z0-829
 ---
