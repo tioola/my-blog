@@ -1,0 +1,401 @@
+---
+layout: post
+title:  "[1z0-829] 4-Core Api's"
+date:   2022-09-13 12:18:33 +0100
+categories: 1Z0-829
+---
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
+
+* Remember that from left to right, once you concatenate a string everything else will be considered a String like the examples below:
+```java
+
+System.out.println(2 + 2 + "C"); // Result in 4c
+System.out.println("C" + 2 + 2); // Result in C22
+
+```
+
+Remember for the exam the following String methods
+* length()
+* charAt(...)
+  * chartAt(int position)
+* indexOf(...)
+  * indexOf(int ch, int fromIndex)
+  * indexOf(String str)
+  * indexOf(String str, int fromIndex)
+```java
+
+var name = "animals";
+System.out.println(name.indexOf('a')); // 0
+System.out.println(name.indexOf("al")); // 4
+System.out.println(name.indexOf('a',4)); // 4
+System.out.println(name.indexOf("al",5)) // 1
+        
+```
+* substring(...)
+  * substring(int beginIndex)
+  * substring(int beginIndex, int endIndex)
+```java
+
+var name = "animals";
+System.out.println(name.indexOf(3)); //mals
+System.out.println(name.indexOf(name.indexOf('m'))); //mals
+System.out.println(name.substring(3,4)); //m
+System.out.println(name.substring(3,7)); //mals
+System.out.println(name.substring(3,3)); //Empty string
+System.out.println(name.substring(3,2)); //Exception
+System.out.println(name.substring(3,8)); //Exception
+```
+* equalsIgnoreCase(**String str**) - Remember it only applied to String
+* startsWith(String prefix)
+* endsWith(String suffix)
+* contains(CharSequence charSeq)
+* replace(...)
+  * replace(char oldChar, char newChar)\
+  * replace(CharSequence target, CharSequence replacement)  
+* trim()\
+* strip() - It does the same as the trim() but also supports unicode
+* stripLeading() - Removes whitespaces only from the beginning
+* stripTrailing() - Removes whitespaces only from the end
+* ident() - adds and removes spaces from the beginning of the string.
+```java
+
+// To better visualize the code below will generate an output of
+
+var block = """
+                             d
+                              e
+                             f""";
+
+        System.out.println(block);
+        System.out.println("------");
+        System.out.println(block.indent(1)); // Note that the result will be 10 because the ident always add a a line break at the end of text blocks for normalization if there is none.
+        System.out.println("------");
+        System.out.println(block.indent(-1)); 
+        System.out.println("------");
+        System.out.println(block.length());
+        System.out.println(block.indent(1).length());
+        System.out.println(block.indent(-1).length());
+        
+        
+        
+/**
+ *
+ * 
+d
+ e
+f
+ ------
+  d
+   e
+  f
+
+ ------
+ d
+ e
+ f
+
+ ------
+ 6
+ 10
+ 6
+ * 
+ * */
+
+```
+* translateEscapes()
+
+```java
+
+// What it does is translate the scape in case there is one.. better to check the example below
+
+var str = "1\\t2";
+System.out.println(str) // 1\t2
+System.out.println(str) // 1 2
+
+```
+
+* String.format(...)
+  * String.format(String format, Object args)
+  * String.format(Locale loc, String format, Object args...)
+* formatted(Object...) this is like the format directly in the string
+* symbols
+  * %s Applies to any type
+  * %d Integer values
+  * %f float and double
+  * %n insert a line break
+---
+
+* char is also a numeric type therefore you can do something like below
+```java
+
+for(char current = 'a'; current <= 'z'; current++)
+
+```
+
+
+---
+StringBuilder important methods
+
+* substring(int start, int end)
+* length()
+* charAt(int position)
+* insert(int offset, String str)
+* delete(int start, int end)
+```java
+
+var sb = new StringBuilder("abcdef");
+
+// Remember that the end position is righ before the index applied.
+sb.delete(1,3) // sb = adef
+
+
+```
+* replace(int start, int end, String newValue) - This is used to replace a portion of the string
+* reverse() -- this method will reverse the entire String
+
+---
+
+* String pool is an intern pool where the strings are stored and shared so if you have somehting like below it will be the same object
+```java
+
+var x = "Hello World";
+var y = "Hello World";
+
+System.out.println(x == y);
+// This returns true
+
+```
+* On the other hand if you evaluate something in runtime like below they will not be the same String
+```java
+
+var x = "Hello World";
+var y = "Hello World".trim();
+
+System.out.println(x == y);
+// This returns false
+
+//This also return false
+var x = "Hello World";
+var y = new String("Hello World");
+
+  System.out.println(x == y);
+
+```
+
+* intern() - If the literal is not in the pool java will add in runtime
+```java
+
+var name = "Hello World";
+var name2 = new String("Hello World").intern();
+System.out.println(name == name2)
+
+// This will return true
+
+```
+
+* Important examples for String pool
+```java
+
+var first = "dog" + 1; // This is added in the String pool making it a **compile time constant**
+var second = "d" + "o" + "g" + "1"; // This is added in as well
+var third = "r" + "a" + "t" + new String("1");
+System.out.println(first == second);
+```
+
+---
+
+Arrays
+
+* Ways of declaring an array variable;
+
+```java
+
+// All of the declaration below have the same result
+
+int[] numDogs;
+int [] numDogs2;
+int []numDogs3;
+int numDogs4[];
+int numDogs5 [];
+
+```
+
+* Instantiating array
+```java
+
+int[] numbers = new int[3];
+
+// Instantiating and initializing
+int[] numbers = new int[3]{3,4,5};
+
+//Or using the short way 
+int[] numbers = {3,4,5};
+
+// You cannot use var to declare and instantiate an array. It will not work
+var numbers = {3,4,5}; // Does not compile.
+
+```
+
+* Remember that the array does not allocate space for the String objects. instead, it allocates space for a reference to where the objects are really stored.
+
+* Binary search is an optimized way of searching in the array, but to make it work your array must be sorted.
+
+```java
+
+int[] numbers = {};
+
+```
+
+* Arrays.compare() can be used to compare arrays but there are some rules that you need to remember to make sure that you will remember them.
+
+```java
+
+
+int[] arr1 = {1,2};
+        int[] arr2 = {1};
+        //This will return 1 since first array is longer;
+        System.out.println(Arrays.compare(arr1,arr2));
+
+
+        int[] arr3 = {1,2};
+        int[] arr4 = {1,2};
+        //This will return 0 since this is an exact match
+        System.out.println(Arrays.compare(arr3,arr4));
+
+        String[] arr5 = {"a"};
+        String[] arr6 = {"aa"};
+        //This will return a negative number since the first is  a substring of the second
+        System.out.println(Arrays.compare(arr5,arr6));
+
+
+        String[] arr7 = {"a"};
+        String[] arr8 = {"A"};
+        //This will return a positive number since lower case in the compare is higher
+        System.out.println(Arrays.compare(arr7,arr8));
+
+
+
+        String[] arr9 = {"a"};
+        String[] arr10 = {null};
+        //Null is smaller than letter therefore it will be positive
+        System.out.println(Arrays.compare(arr9,arr10));
+  
+
+```
+
+* mismatch() if the array is equals it returns -1 otherwise it returns the first index where it differs.
+* Multidimensional arrays can be declared in several ways in the exam and you have to differ them.
+
+```java
+
+int[][] vars1; // 2D array
+int vars2 [][]; // 2D array
+int[] vars3[]; // 2D array
+int[] vars4[], space [][]; // This is a 2D and a 3D array
+
+
+```
+
+
+---
+Math api
+
+* Math.round()
+  * Math.round(123.50); // Will return 124
+  * Math.round(123.45f); // Will return 123
+* Math.ceil(3.14); 4.0
+* Math.floor(3.14); 3.0
+* Math.random()
+---
+Date and time
+
+ * LocalDate.now();
+ * LocalTime.now();
+ * LocalDateTime.now();
+ * ZonedDateTime.now();
+ * LocalDate.of(...)
+   * LocalDate.of(2022, Month.JANUARY, 20)
+   * LocalDate.of(2022, 1, 20)
+ * LocalTime.of(...)
+   * LocalTime.of(6,15) - hour and minute
+   * LocalTime.of(6,15,30) + seconds
+   * LocalTime.of(6,15,30,200) + nanoseconds
+ * LocalDateTime.of(...)
+   * LocalDateTime.of(int year, int month, int dayOfMonth, int hour, int minute)
+   * LocalDateTime.of(int year, int month, int dayOfMonth, int hour, int minute, int second)
+   * LocalDateTime.of(int year, int month, int dayOfMonth, int hour, int minute, int second, int nanos)
+   * LocalDateTime.of(int year, Month month, int dayOfMonth, int hour, int minute)
+   * LocalDateTime.of(int year, Month month, int dayOfMonth, int hour, int minute, int second)
+   * LocalDateTime.of(int year, Month month, int dayOfMonth, int hour, int minute, int second, int nanos)
+   * LocalDateTime.of(LocalDate date, LocalTime time)
+ * ZonedDateTime.of(...)
+   * ZonedDateTime.of(int year, int month, int dayOfMonth, int hour, int minute, int second, int nanos, ZoneId zone)
+   * ZonedDateTime.of(LocalDate date, LocalTime time, ZoneId zone)
+   * ZonedDateTime.of(LocalDateTime dateTime, ZoneId zone)
+---
+
+* Remember that these date classes are **Immutable**
+```java
+
+var date = LocalDate.now();
+date = date.plusDays(2); // This will return a new isntance
+
+
+
+```
+* Period class has the following methods
+  * Period.ofYears(long)
+  * Period.ofMonths(long)
+  * Period.ofDays(long)
+  * Period.ofWeeks(long)
+  * Period.of(1,0,7)
+* Period class can be used In LocalDate and LocalDateTime since it takes only years months and days
+```java
+
+var     myDate = LocalDate.now();
+
+      var myPeriod = Period.ofMonths(1);
+
+      System.out.println(myDate.plus(myPeriod));
+
+```
+
+* Duration works similarly as Period but it has also different behavior since it is intendent for smaller periods of time
+  * Duration.ofDays(long)
+  * Duration.ofHours(long)
+  * Duration.ofMinutes(long)
+  * Duration.ofSeconds(long)
+  * Duration.ofMillis(long)
+  * Duration.ofNanos(long)
+  * Duratino.of(long,ChornoUnit)
+```java
+ // Using ChronoUnit your code would look like more or less like below
+
+    Duration.of(1, ChronoUnit.DAYS)
+
+
+```
+
+* You can also use ChronoUnit to get the difference
+```java
+
+var firstHour = LocalTime.now();
+var secondHour = LocalTime.now();
+        
+
+ChronoUnit.HOURS.between(firstHour,secondYour)
+
+```
+
+* You have to remember that in 13 of march at 2 pm it is not Daylight saving time and the hour 2:30 will no exist for example
+* Considering the explanation above, remember that java is smart enough to do all the adjustments
+* When you call substring with only one parameter it will go from there until the end.
+```java
+
+var numbers
+
+```
+
+* dateTime.toInstant() does not exists

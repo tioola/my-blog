@@ -1,0 +1,200 @@
+---
+layout: post
+title:  "[1z0-829] 5-Methods"
+date:   2022-09-13 12:18:33 +0100
+categories: 1Z0-829
+---
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
+
+* Two of the parts the method name and parameter list are called method signature.#
+* This is quite obvious but you can`t declare a method (or class) both final and abstract
+* remember that access modifiers and opional specifiers can be listed in any other but **once the return type is specified the rest must follow the order:** name, parameter list, exception
+
+```java
+
+public class Excercise {
+    
+    public void method1() {}
+    public final void method2(){};
+    public static final void  method3(){};
+    public final static void method4(){};
+    public void final method5(){}// Does not compile
+    final public void method6(){}
+    
+}
+
+```
+
+* Remember that in a void method you can use return to break the process
+```java
+
+public void myMethod() {return;}
+
+```
+
+* Althought you shoouldn`t do it the method below is DOES compile
+```java
+
+    public void Jog_$(){}
+
+```
+
+* Empty void methods also compile
+
+```java
+
+public void fly1() {}
+
+```
+
+* There is only one modifier that can be applied to a local variable: final.
+* If a method contains a varargs parameter, it must be the last parameter in the list.
+* If you have a method that receives a varargs, you can call it passing an array or a list of values directly like below
+```java
+
+int[] myData = new int[]{1, 2, 3};
+myMethod(myData);
+// Both ways are valid
+myMethod(1,2,3);
+//Or you can also omit the varargs in the method call and java will create an array of length zero
+myMethod()
+// You can also explicitly pass null in the method and java will not create an empty array
+```
+* Remember that protected also gives us acces to everything that package access does.
+* protected method can only be accessed through inheritance not instance
+```java
+
+class Animal {
+    protected void runFast(){
+        //Logic to run
+    }    
+}
+
+class Dog extends Animal {
+    
+    String barkAndRun(){
+        System.out.println("bark");
+        runFast();// This can be accesed
+    }
+    
+    void myWrontMethod(){
+        
+        Animal an = new Animal();
+        an.runFast();// This does not compile
+    }
+    
+}
+
+
+
+```
+
+* Remember that you can acess a static variable using an instance of the class
+* Main class can be called as a normal method
+* The compiler will complain if you try to explicitly do a static import of two static methods or variables with the same name.
+```java
+
+import static myp.A.TYPE;
+import static myp.B.TYPE;
+
+```
+* Java is a "pass-by-value" language. This means that a copy of the variable is made and the method receives that copy.
+
+```java
+
+public static void main(String[]args){
+    int myvar = 1;
+    changeVariable(myvar);
+    System.out.println(myvar)// This will print one
+}
+
+public static void changeVariable(int myvar){
+    myvar= 3;
+}
+
+```
+
+* Java do autoboxing/unboxing and casting automatically
+```java
+
+int mynumber = 2;
+Integer mynumberw = mynumber; //Autoboxing
+int mynumberp = mynumberw; //Unboxing
+
+```
+* Java will automatically cast or autobox the int value to long or Integer. neither of thse can be assigned to a long variable so:
+
+```java
+
+   //This does not compile
+   Integer e = 9;
+   Long myv = e;
+   
+  // but this compiles
+  Integer e = 9;
+  long myv = e;
+   
+```
+* Return type, access modified and excetion list are irrelevant to overloading.
+* Remember that for method overloading java will always select the most specific.
+```java
+
+public class MyMethod {
+    
+    public void mm(int numMiles) {
+        System.out.println("int");
+    }
+    
+    public void mm(short numMiles) {
+        System.out.println("short");
+    }
+    
+}
+
+// calling mm((short)1) will execute short
+
+```
+
+* Remember that the methods overload below are valid
+
+```java
+
+public class MyMethod {
+    
+    public void mm(int numMiles) {
+        System.out.println("int");
+    }
+    
+    public void mm(Integer numMiles) {
+        System.out.println("Integer");
+    }
+    
+}
+
+```
+
+* On the other hand with arrays you don`t have this same flexibility
+
+```java
+
+
+public static void myMethod(int[] ints){} //Does not compile
+
+public static void myMethod(Integer[] ints){} //Does not compile
+
+```
+
+
+* Varargs and array ar considered the same for method overload
+
+```java
+
+
+public static void myMethod(int[] ints){} //Does not compile
+
+public static void myMethod(Integer[] ints){} //Does not compile
+
+
+```
