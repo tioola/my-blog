@@ -1,0 +1,150 @@
+---
+layout: post
+title:  "[1z0-829] 6-Inheritance"
+date:   2022-09-13 12:18:33 +0100
+categories: 1Z0-829
+---
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
+
+* By design, Java doesn`t support multiple inheritance in the language because multiple inheritance can lead to complex, often difficult-to-maintain data models.
+* Trying to declare a top-level class with protected or private class will lead to a compiler error, though:
+```java
+
+// MyClass.java
+protected class MyClass{} // This does not compile
+
+```
+* When you have a variable with the same name in a subclass and parent both variables will be stored. Remember the code below and that the reference type is what determines which variable will be used.
+```java
+
+public abstract class ClassA {
+
+    protected int myvar = 10;
+
+}
+
+
+public class ClassB extends ClassA{
+    public int myvar = 20;
+
+    public static void main(String[] args) {
+
+        ClassB cb = new ClassB();
+        System.out.println(cb.myvar);
+        ClassA ca = cb;
+        System.out.println("-" + ca.myvar);
+
+    }
+
+}
+
+
+
+
+// The output of this code is
+
+
+/**
+ * 
+ 20
+ -10
+ */
+
+```
+
+* when **this()** is used, Java class another constructor on the same instance of the class
+
+```java
+
+public class MyClass {
+    
+    public MyClass(){
+        this("default");
+    }
+    
+    public MyClass(String myParameter){
+        //Do something
+    }
+    
+}
+
+```
+
+* **this()** and **super()** must be the first statement in the constructor.
+* The first line of every constructor is a call to a parent constructor using super() or an overloaded constructor using this()
+* If the constructor does not contain a **this()** or a **super()** reference. then the compiler automatically insert super() with no arguments as the first line of the constructor;
+* Remember that static constructors are executed once you first use the class, check the example below:
+```java
+
+public class ClassA {
+
+    static {
+        System.out.println("A");
+    }
+
+}
+
+public class ClassB{
+
+    public static void main(String[] args){
+
+        System.out.println("B");
+        ClassA ca = new ClassA();
+
+    }
+
+}
+
+// This code prints 
+/**
+ * 
+ *  B
+ *  A
+ */
+
+```
+* By the time the constructor completes, all final instance variables must be assigned a value exactly once.
+* We can assign a null value to final instance variables as long as they are explictily set.
+* It first process the static variable and static initializers
+* A class is initialized at most once by the JVM before it is referenced or used.
+* The method in the child class must be at least as accessible as the method in the parent class.
+* Overriding a method cannot declare new checked exceptions or checked exceptions broader than the inherited method.
+* private methods can be declared in both the parent and the child but they will be considered independent.
+* A static method cannot be overriden but on the other hand it can be hidden.
+
+```java
+
+public class MyClassA {
+    
+    public static void method1(){
+        System.out.println("MyClassA");
+    }
+    
+} 
+
+public class MyClassB extends MyClassA{
+    
+    public static void method1() {
+        System.out.println("MyClassB");
+    }
+
+    public static void main(String[] args) {
+        method1();
+    }
+    
+}
+
+```
+
+* You cannot hide a static method if it is marked as final (quite obvious)
+* Only instance methods can be markd as abstract whithin a class, not variables, constructors or static methods
+* An abstract method can only be declared in an abstract class
+* An abstract class is not required to include an abstract method
+* Like the final modifier, the abstract modifier can be placed before of after the access modifier in class and method declarations, as shown in this Tiger class:
+* Method cannot be both abstract and final or abstract and private for obvious reasons.
+* static methods cannot be abstract
+* whenever you want to hide a method, you don`t need to use the same return type
+* To have an immutable class the class must not be able to be extended outside the class declaration
+* 
