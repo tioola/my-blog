@@ -28,6 +28,7 @@ public class Excercise {
 ```
 
 * Remember that in a void method you can use return to break the process
+
 ```java
 
 public void myMethod() {return;}
@@ -35,6 +36,7 @@ public void myMethod() {return;}
 ```
 
 * Althought you shoouldn`t do it the method below is DOES compile
+
 ```java
 
     public void Jog_$(){}
@@ -52,6 +54,7 @@ public void fly1() {}
 * There is only one modifier that can be applied to a local variable: final.
 * If a method contains a varargs parameter, it must be the last parameter in the list.
 * If you have a method that receives a varargs, you can call it passing an array or a list of values directly like below
+
 ```java
 
 int[] myData = new int[]{1, 2, 3};
@@ -64,6 +67,7 @@ myMethod()
 ```
 * Remember that protected also gives us acces to everything that package access does.
 * protected method can only be accessed through inheritance not instance
+
 ```java
 
 class Animal {
@@ -94,12 +98,14 @@ class Dog extends Animal {
 * Remember that you can acess a static variable using an instance of the class
 * Main class can be called as a normal method
 * The compiler will complain if you try to explicitly do a static import of two static methods or variables with the same name.
+
 ```java
 
 import static myp.A.TYPE;
 import static myp.B.TYPE;
 
 ```
+
 * Java is a "pass-by-value" language. This means that a copy of the variable is made and the method receives that copy.
 
 ```java
@@ -117,6 +123,7 @@ public static void changeVariable(int myvar){
 ```
 
 * Java do autoboxing/unboxing and casting automatically
+
 ```java
 
 int mynumber = 2;
@@ -139,6 +146,7 @@ int mynumberp = mynumberw; //Unboxing
 ```
 * Return type, access modified and excetion list are irrelevant to overloading.
 * Remember that for method overloading java will always select the most specific.
+
 ```java
 
 public class MyMethod {

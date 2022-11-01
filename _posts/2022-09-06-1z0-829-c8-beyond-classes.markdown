@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[1z0-829] 7-Beyond Classes"
+title:  "[1z0-829] 8-Lambdas and Functional Interfaces"
 date:   2022-09-27 12:18:33 +0100
 categories: 1Z0-829
 ---
@@ -27,6 +27,7 @@ MyStringChecker lambda =  (s,p) -> s.startsWith(p);
 
 * Binary files generated when compiling a lambda will contain $$ as the name
 * Sample of common functional interfaces
+
 ```java
 
 class Samples {
