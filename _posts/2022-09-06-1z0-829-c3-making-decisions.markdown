@@ -10,6 +10,8 @@ You might think that sometimes is silly to highlight some things but even those 
 
 * Pattern matching was introduced in Java 16 to reduce boilerplate. It is a technique of controlling program flow that only executes a section of code that meets certain criteria.
 * With pattern matching you can avoid casting after an instance of for example:
+
+
 ```java
 
 //This code is the old version

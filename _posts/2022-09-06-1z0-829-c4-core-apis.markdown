@@ -24,6 +24,8 @@ Remember for the exam the following String methods
   * indexOf(int ch, int fromIndex)
   * indexOf(String str)
   * indexOf(String str, int fromIndex)
+
+
 ```java
 
 var name = "animals";
@@ -33,9 +35,11 @@ System.out.println(name.indexOf('a',4)); // 4
 System.out.println(name.indexOf("al",5)) // 1
         
 ```
+
 * substring(...)
   * substring(int beginIndex)
   * substring(int beginIndex, int endIndex)
+
 ```java
 
 var name = "animals";
@@ -47,6 +51,7 @@ System.out.println(name.substring(3,3)); //Empty string
 System.out.println(name.substring(3,2)); //Exception
 System.out.println(name.substring(3,8)); //Exception
 ```
+
 * equalsIgnoreCase(**String str**) - Remember it only applied to String
 * startsWith(String prefix)
 * endsWith(String suffix)
@@ -59,6 +64,8 @@ System.out.println(name.substring(3,8)); //Exception
 * stripLeading() - Removes whitespaces only from the beginning
 * stripTrailing() - Removes whitespaces only from the end
 * ident() - adds and removes spaces from the beginning of the string.
+
+
 ```java
 
 // To better visualize the code below will generate an output of
@@ -104,6 +111,7 @@ f
  * */
 
 ```
+
 * translateEscapes()
 
 ```java
