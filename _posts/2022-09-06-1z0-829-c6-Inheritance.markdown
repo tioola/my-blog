@@ -10,6 +10,7 @@ You might think that sometimes is silly to highlight some things but even those 
 
 * By design, Java doesn`t support multiple inheritance in the language because multiple inheritance can lead to complex, often difficult-to-maintain data models.
 * Trying to declare a top-level class with protected or private class will lead to a compiler error, though:
+
 ```java
 
 // MyClass.java
@@ -17,6 +18,7 @@ protected class MyClass{} // This does not compile
 
 ```
 * When you have a variable with the same name in a subclass and parent both variables will be stored. Remember the code below and that the reference type is what determines which variable will be used.
+
 ```java
 
 public abstract class ClassA {
@@ -76,6 +78,7 @@ public class MyClass {
 * The first line of every constructor is a call to a parent constructor using super() or an overloaded constructor using this()
 * If the constructor does not contain a **this()** or a **super()** reference. then the compiler automatically insert super() with no arguments as the first line of the constructor;
 * Remember that static constructors are executed once you first use the class, check the example below:
+
 ```java
 
 public class ClassA {
@@ -147,4 +150,3 @@ public class MyClassB extends MyClassA{
 * static methods cannot be abstract
 * whenever you want to hide a method, you don`t need to use the same return type
 * To have an immutable class the class must not be able to be extended outside the class declaration
-* 

@@ -11,6 +11,7 @@ You might think that sometimes is silly to highlight some things but even those 
 
 * Interface variables are referred to as constants because they are assumed to be public static and final
 * Interface methods also include implicite public and abstract
+
 ```java
 //     abstract is implicit and not necessary
 public abstract interface MyInterface {
@@ -48,6 +49,7 @@ public class IntegerProducer extends Producer {
 
 * Unlike a class which can extend only one class, an interface can extend multiple interfaces.
 * It is quite obvious but the code below would never compile
+
 ```java
 
 public  interface MyClass {
@@ -58,6 +60,7 @@ public  interface MyClass {
 }
 
 ```
+
 * Some default method rules to remember
   * A default method may be declared only within an interface
   * A default method must be marked with the default keyword and include a method body
@@ -122,6 +125,7 @@ public class Bunny implements Hop {
 
 * DayOfWeek.valueOf("MONDAY") works, while DayOfWeek.valueOf("monday") does not work, it is case sensitive
 * Remember how to use enums correctly in Switch case
+
 ```java
 
     public void myMethod(DayOfWeek dow){
@@ -132,8 +136,10 @@ public class Bunny implements Hop {
     }
 
 ```
+
 * All enum constructors are implicitly private.
 * Remember that you can have abstract methods in the Enum. You would need to implement them in each ENUM value like the example below:
+
 ```java
 
 public enum Season {
@@ -369,6 +375,7 @@ public class LocalClass {
 
 * You can use outer variables only in case they are final or effective final
 * Anonymous class is basically creating a class without any name .
+
 ```java
 
 public interface MyInterface() {

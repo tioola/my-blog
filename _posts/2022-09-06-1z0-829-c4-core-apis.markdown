@@ -9,6 +9,7 @@ You might think that sometimes is silly to highlight some things but even those 
 ---
 
 * Remember that from left to right, once you concatenate a string everything else will be considered a String like the examples below:
+
 ```java
 
 System.out.println(2 + 2 + "C"); // Result in 4c
@@ -133,9 +134,12 @@ System.out.println(str) // 1 2
   * %d Integer values
   * %f float and double
   * %n insert a line break
+  
 ---
 
 * char is also a numeric type therefore you can do something like below
+
+
 ```java
 
 for(char current = 'a'; current <= 'z'; current++)
@@ -151,6 +155,7 @@ StringBuilder important methods
 * charAt(int position)
 * insert(int offset, String str)
 * delete(int start, int end)
+
 ```java
 
 var sb = new StringBuilder("abcdef");
@@ -177,6 +182,8 @@ System.out.println(x == y);
 
 ```
 
+
+
 * On the other hand if you evaluate something in runtime like below they will not be the same String
 
 ```java
@@ -196,7 +203,7 @@ var y = new String("Hello World");
 ```
 
 * intern() - If the literal is not in the pool java will add in runtime
-* 
+
 ```java
 
 var name = "Hello World";
@@ -208,6 +215,7 @@ System.out.println(name == name2)
 ```
 
 * Important examples for String pool
+
 ```java
 
 var first = "dog" + 1; // This is added in the String pool making it a **compile time constant**
@@ -235,6 +243,7 @@ int numDogs5 [];
 ```
 
 * Instantiating array
+
 ```java
 
 int[] numbers = new int[3];
@@ -350,15 +359,13 @@ Date and time
 
 * Remember that these date classes are **Immutable**
 
-
 ```java
 
 var date = LocalDate.now();
 date = date.plusDays(2); // This will return a new isntance
 
-
-
 ```
+
 * Period class has the following methods
   * Period.ofYears(long)
   * Period.ofMonths(long)
@@ -391,25 +398,23 @@ var     myDate = LocalDate.now();
  // Using ChronoUnit your code would look like more or less like below
 
     Duration.of(1, ChronoUnit.DAYS)
-
-
 ```
 
 * You can also use ChronoUnit to get the difference
 
 ```java
-
 var firstHour = LocalTime.now();
 var secondHour = LocalTime.now();
         
 
 ChronoUnit.HOURS.between(firstHour,secondYour)
-
 ```
+
 
 * You have to remember that in 13 of march at 2 pm it is not Daylight saving time and the hour 2:30 will no exist for example
 * Considering the explanation above, remember that java is smart enough to do all the adjustments
 * When you call substring with only one parameter it will go from there until the end.
+
 
 
 ```java
