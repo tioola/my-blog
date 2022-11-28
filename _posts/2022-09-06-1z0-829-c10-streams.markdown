@@ -1,0 +1,288 @@
+---
+layout: post
+title:  "[1z0-829] 9-Streams"
+date:   2022-17-11 12:18:33 +0100
+categories: 1Z0-829
+---
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
+
+Optional
+
+* When optional has no value and you call optional.get() it will throw a NoSuchElementException
+* **Optional.orElse(T value)** receives the value that should be return in case optional is empty
+* **Optional.orElseGet(Supplier<? extends T> supplier)** receives a supplier to return the value in case the optional has none
+* **Optional.orElseThrow()** will throw a NoSuchElementException in case it has nothing
+
+---
+
+Streams
+
+* Remember that streams operate in a Lazy mode therefore the data isn`t generated up front. it is created when needed
+* **Stream.generate(Supplier<? extends T>)** Will create a stream that can be infinite if you do not kill it.
+
+```java
+Stream<Double> randoms = Stream.generate(Math::random);
+```
+
+* **Stream.iterate(final T seed, final UnaryOperator<T> f)** is like Stream.generate() but more flexible since you have a seed and also a iterate(In the example below you can see a infinite iterate.
+
+```java
+Stream<Integer> oddNumbers = Stream.iterate(1, n -> n +2)
+```
+
+* **Stream.iterate(...)** Iterate also has a method that receives 3 parameters being the second one a predicate to specify when done and avoid the inifite.
+
+```java
+
+Stream.iterate(1,
+        n -> n < 50, // This is the predicate to specify when done
+        n -> n + 2) // This is the UnaryOperator to get next value.
+
+```
+
+* **Stream.min(Comparator<? super T> comparator)** Passing a comparator you can get the min value (returns Optional<T>)
+* **Stream.max(Comparator<? super T> comparator)** Same as above but to get max number.
+* **Stream.findFirst()** As the name says it will find the first element.
+* **Stream.findAny()** As the name says it will find any element
+* Stream has also method to verify if there are matching itens
+  * Stream.anyMatch(Predicate <? super T> predicate)
+  * Stream.allMatch(Predicate <? super T> predicate)
+  * Stream.noneMatch(Predicate <? super T> predicate)
+* **Stream.reduce()** Reduce will work in an immutable way and can receive a seed or not
+
+```java
+
+// Note that in this example without seed receives an Optional 
+// The reason is that it is nice to differentiate the case when the string might be empty and the case where there will be a value.
+final Integer withSeed = Stream.of(1, 2, 3).reduce(1, (a, b) -> a + b);
+final Optional<Integer> withoutSeed = Stream.of(1, 2, 3).reduce((a, b) -> a + b);
+
+```
+
+* **Stream.reduce()** can also be used with differente types
+
+```java
+
+final Stream<String> animals = Stream.of("dog", "cat", "bat");
+final Integer reduce = animals.reduce(0, (i, s) -> i + s.length(), (a, b) -> a + b);
+
+
+```
+* **Stream.collect** is a special type of reduction called "mutable reduction" unlike reduce it will mutate the object which will be better to perform
+  * The first parameter is the supplier.
+  * The second parameter is the accumulator.
+  * The final parameter is the combiner.
+
+```java
+
+     final Stream<String> stream = Stream.of("h", "e", "l", "l", "o");
+     
+        final StringBuilder collect = stream.collect(StringBuilder::new, // First parameter to create the seed
+                StringBuilder::append, // Here is how this seed will be changed
+                StringBuilder::append); // The third parameter will be used for parallel streams
+
+        System.out.println(collect.toString());
+
+
+```
+* Stream.filter() method returns a Stream with alements that match a given expression.
+* Stream.distinct() method returns a stream with duplicate values removed.
+* Stream.limit() or Stream.skip() methods can make a Stream smaller or limit()
+* Stream.flatMap() method takes each element in the streeam and makes any elements it contains top-level elements in a single stream.
+
+```java
+
+// This example puts everything in the same evel and removes the empty list.
+
+List<String> zero = List.of();
+var one = List.of("Coca-cola");
+var two = List.of("Doritos", "Stickers");
+Stream<List<String>> junkFood = Stream.of(zero, one, two);
+
+
+```
+
+* Stream.sorted() or Stream.sorted(Comparator) method returns a stream with the elements sorted. Just like sorting arrays. Java uses natural ordering unless we specify a comparator.
+* Stream.peek()) is like the forEach but used as an intermediate operator.
+* Primitive streams knows how to perform certain common operations.
+  * **IntStream** Used for the primitive types int, short, byte and char
+  * **LongStream** Used for the primitive type long.
+  * **DoubleStream** Used for primitive types double and float.
+* One example of operation is like below
+
+```java
+
+IntStream intStream = IntStream.of(2, 4, 6);
+OptionalDouble avg = intStream.average();
+System.out.println(avg.getAsDouble()); // 4.0
+
+```
+
+* In the method IntStream.range() the first parameter is inclusive and the second paramter is exclusive.
+
+```java
+
+IntStream range = IntStream.range(1,6);
+range.forEach(System.out::println); // 12345
+
+```
+
+* We also have flatMap() operations that returns primitive streams.
+  * Stream.flatMapToInt()
+  * Stream.flatMapToDouble()
+  * Stream.flatMapToLong()
+
+* We can also create a Stream from a primitive stream.
+
+
+```java
+
+private static Stream<Integer> mapping(IntStream stream) {
+        return stream.mapToObj(x -> x);
+}
+        
+private static Stream<Integer> boxing(IntStream stream) {
+        return stream.boxed();
+}
+
+```
+
+* Remember that the difference between OptionalDouble and Optional<Double> is that the first one is for the primitive class while the second one is for the wrapper class.
+
+* IntStream.min() and IntStream.max() are terminal operators therefore should be used once for each stream
+* If you need to have the data with the statistics of it you have to get the IntSummaryStatistics
+
+```java
+
+private static int range(IntStream ints) {
+  IntSummaryStatistics stats = ints.summaryStatistics();
+  return stats.getMax()-stats.getMin();
+}
+
+```
+
+* Spliterator is responsible to divide your stream elements. Check the example bellow to understand better
+
+```java
+
+        final Stream<String> stream = Stream.of("item 1-",
+                "item 2-", "item 3-", "item 4-", "item 5-", "item 6-",
+                "item 7-");
+
+        final Spliterator<String> originalBag = stream.spliterator(); // This will create the spliterator but won`t divide yet
+        final Spliterator<String> firstBag = originalBag.trySplit(); // This will create the bag with 3 items leaving the 4 remaining to the original bag
+
+        firstBag.forEachRemaining(System.out::print);// will return item 1-item 2-item 3-
+
+        final Spliterator<String> secondBag = originalBag.trySplit();
+
+        secondBag.forEachRemaining(System.out::print); // will return item 4-item 5
+        originalBag.forEachRemaining(System.out::print); // will return item 6-item 7-
+
+```
+
+* Spliterator also can recognize if a stream is infinite and does not attempt to give you half.
+* To collect into map you can use the approach below
+
+
+```java
+
+var myAnimals = Stream.of("lions", "tigers", "bears");
+Map<String, Integer> map = myAnimals.collect(
+
+Collectors.toMap(s -> s, String::length)); // Here the first is the key and second will be the value of the map
+System.out.println(map); // {lions=5, bears=5, tigers=6}
+
+
+// Note that if you had done the example below it would throw an exception because we didn`t tell java how to handle duplicates
+//java.lang.IllegalStateException: Duplicate key 5
+Collectors.toMap(String::length,s -> s  ));
+
+
+// If we want to deal with duplicates we have to pass the method for it like the example below
+
+ohMy.collect(Collectors.toMap(
+        String::length,
+        k -> k,
+        (s1, s2) -> s1 + "," + s2));
+        System.out.println(map); // {5=lions,bears, 6=tigers}
+        System.out.println(map.getClass());
+
+
+```
+
+* Collectors.groupBy() can be used to group items based on a property of a list like
+
+```java
+
+        final Stream<String> animals = Stream.of("Cow", "Dog", "Cat", "Snake");
+
+        final Map<Integer, List<String>> collect = cow.collect(Collectors.groupingBy(String::length));
+
+        System.out.println(collect);
+
+
+```
+
+* Collectors.groupBy() also can be used with different types of maps doing like below
+
+```java
+
+
+        final Stream<String> animals = Stream.of("Cow", "Dog", "Cat", "Snake");
+
+        final TreeMap<Integer, Set<String>> collect = 
+                cow.collect(Collectors.groupingBy(String::length, TreeMap::new, Collectors.toSet()));
+
+
+```
+
+* Collectors.partitionBy() can be used when we need to partition our list doing like the example below:
+
+```java
+
+       final Stream<String> animals = Stream.of("Cow", "Dog", "Cat", "Snake");
+
+       final Map<Boolean, List<String>> collect = animals.collect(Collectors.partitioningBy(s -> s.length() > 3));
+
+       System.out.println(collect);// {false=[Cow, Dog, Cat], true=[Snake]}
+
+```
+
+* We can use the Collectors.groupingBy() with Collectors.mapping() if you want to go downstream and even modify the element
+
+```java
+
+
+        final Stream<String> animals = Stream.of("Cow", "Dog", "Cat", "Snake");
+
+        final Map<Integer, Optional<Character>> collect = animals.collect(Collectors.groupingBy(String::length,
+                Collectors.mapping(s -> s.charAt(0), Collectors.minBy((a, b) -> a - b))
+        ));
+
+        System.out.println(collect);
+
+```
+
+* Collectors.teeing() were added for situations where you need 2 results for the same stream. which can be as an example below where we want 2 lists with different delimitators
+
+```java
+
+        final Stream<String> animals = Stream.of("Cow", "Dog", "Cat", "Snake");
+
+        final Map<String, String> collect = animals.collect(Collectors.teeing(
+                Collectors.joining("-"),
+                Collectors.joining(","),
+                (s, c) -> {
+                    final Map<String, String> myResult = new HashMap<>();
+                    myResult.put("first",s);
+                    myResult.put("second",c);
+                    return myResult;
+                }
+        ));
+
+        System.out.println(collect);
+
+```

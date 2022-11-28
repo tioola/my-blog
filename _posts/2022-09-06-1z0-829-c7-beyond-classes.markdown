@@ -26,7 +26,7 @@ public abstract interface MyInterface {
 ```
 
 * For obvious reasons interfaces cannot be marked as final
-* Remember that covariant return type is: When we override a method the return type can be a subtype f the type of the overridden method for example
+* Remember that covariant return type is: When we override a method the return type can be a subtype of the type of the overridden method for example
 
 ```java
 
