@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[1z0-829] 7-Beyond Classes"
+title:  "[1z0-829] 8-Beyond Classes"
 date:   2022-09-27 12:18:33 +0100
 categories: 1Z0-829
 ---
