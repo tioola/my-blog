@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[1z0-829] 9-Streams"
-date:   2022-17-11 12:18:33 +0100
+date:   2022-11-17 12:18:33 +0100
 categories: 1Z0-829
 ---
 _These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
