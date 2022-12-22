@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[1z0-829] 9-Streams"
+title:  "[1z0-829] 10-Streams"
 date:   2022-11-17 12:18:33 +0100
 categories: 1Z0-829
 ---

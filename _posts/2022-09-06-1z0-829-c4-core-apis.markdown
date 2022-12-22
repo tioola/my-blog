@@ -44,8 +44,8 @@ System.out.println(name.indexOf("al",5)) // 1
 ```java
 
 var name = "animals";
-System.out.println(name.indexOf(3)); //mals
-System.out.println(name.indexOf(name.indexOf('m'))); //mals
+System.out.println(name.substring(3)); //mals
+System.out.println(name.substring(name.indexOf('m'))); //mals
 System.out.println(name.substring(3,4)); //m
 System.out.println(name.substring(3,7)); //mals
 System.out.println(name.substring(3,3)); //Empty string
