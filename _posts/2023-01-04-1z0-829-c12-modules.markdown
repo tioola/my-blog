@@ -1,0 +1,239 @@
+---
+layout: post
+title:  "[1z0-829] 12-Modules"
+date:   2023-01-04 12:18:33 +0100
+categories: 1Z0-829
+---
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
+
+* A module is a group of one or more packages plus a special file called **module-info.java**
+* The advantages of modules are:
+  * Better access control: You can have packages that are only accessible to other packages in the module
+  * Clearer dependency management: Java complain about missing jar when starting up the program rather then runtime access
+  * Custom java builds: You can create thin runtimes
+  * Improved security: You don`t have to worry about vulnerabilities in a part you don`t use
+  * Improved performance: Improvement in startup time and lower memory requirements.
+  * Unique package enforcement: Since modules specify exposed packages, jave can ensure that each package comes from only one module and avoid confusion
+* Things to remember about the module file
+  * The module-info.java file must be in the root directory of your module.
+  * module declaration must be in the root directory of your module
+  * module name follows the naming rules for packaging names.
+* Example of command to compile a module
+  * --module-path or -p indicates the location of any custom module files
+  * -d is the location of of the .class files
+  * don`t forget you have to compile the module-info.java
+
+```shell
+javac --module-path mods -d animals animals/*.java animals/com/animals/small/Pinguin.java
+
+#or
+
+javac --p mods -d animals animals/*.java animals/com/animals/small/Pinguin.java 
+```
+
+* Example of how to run a module
+  * --module-path or -p indicates the location of any custom module files
+  * --module or -m is the module/class to execute
+  * the class should be executed with <module.name>/<class.name>
+
+```shell
+
+java --module-path animals --module com.animals/com.animals.small.Pinguin
+
+or
+
+java -p animals -m com.animals/com.animals.small.Pinguin
+
+```
+* packaging a module is done using the regular jar command like
+
+```shell
+jar -cvf mods/com.animals.jar -C animals/ .
+```
+
+* to run the file you need to do exactly the same as above but pointing to the mods folder
+
+```shell
+
+java -p mods -m com.animals/com.animals.small.Pinguin
+```
+
+* The **exports** keyword inside the module-info.java is used to define which packages of your module will be exported in the example below we are exporting the com.animals.small package
+
+```java
+
+module com.animals {
+
+        exports com.animals.small;
+}
+
+```
+
+* On the other side you can use the **requires** keyword to define which module your module requires as dependencies
+
+```java
+module com.zoo {
+        requires com.animals;
+}
+```
+
+* You can also export your package to another specific module like, this way only that module will be able to access it like in the example below:
+
+```java
+
+
+module com.animals {
+
+  exports com.animals.small to com.zoo;
+}
+
+
+```
+
+* **requires transitive** means that every project that requires from your module will also required from the other module.
+
+```java
+module com.zoo {
+        requires transitive com.animals;
+}
+```
+
+* Java does not allow you to repeat the same module in a requires clause, so  the code below would not compile
+
+```java
+
+module com.zoo {
+        requires transitive com.animals;
+        requires com.animals;
+}
+```
+
+* **open** keyword is used to open your package to reflection;
+
+```java
+module com.zoo {
+    opens com.animals;
+}
+
+```
+
+* or you could also do something like below to open for a specific module:
+
+```java
+
+module com.zoo {
+    opens com.animals to com.zoo;
+}
+
+```
+
+* The **uses** and **provides** are used to declare your services and will be necessary for the ServiceLoader to load de implementation of your service , take the example below:
+
+* service-interfaces module (this module contains only the interfaces)
+```java
+
+module com.service.interfaces {
+    exports com.service.interfaces; 
+}
+
+```
+
+* service-implementation module ( this module will contain the implementation of the services)
+```java
+
+module com.service.implementation {
+    requires com.service.interfaces;
+    provides com.service.interfaces.MyService with com.service.implementation.MyServiceImpl;
+}
+
+```
+
+* my-application module (this is where the application will be using it)
+
+```java
+module com.my.application {
+  requires com.service.interfaces;
+  uses com.service.interfaces.MyService;
+}
+
+```
+
+* With all this setup you should be able to use the service Loader like in the example below
+
+```java
+
+public class App {
+
+
+
+                public static void main(String[] args){
+                        ServiceLoader<MyService> loader = ServiceLoader.load(MyService.class);
+                        for(MyService ms : loader) {
+                                System.out.println(ms.getDetails());
+                        }
+                }
+
+}
+
+```
+
+* every module already requires java.base so even if you add it there won`t be any differences.
+* to describe a module you can use the following command
+
+```shell
+
+java -p mods -d my.module
+
+#or this way
+
+java -p mods --describe-module my.module
+
+```
+
+* a jar command can also describe a module
+
+```shell
+
+jar -f mods/my.module.jar -d
+
+#or
+
+jar -f mods/my-module.jar --describe module
+
+```
+
+* or if you want to list all the modules
+
+```shell
+
+java -p mods --list-modules
+
+```
+
+* you can use jdeps for describing the module dependency. like the example below
+
+```shell
+
+jdeps --module-path mods -s mods/com.my.module.jar
+
+```
+
+* **jmod** commands must be used only when you have native libraries or something like that
+
+* Jlink is used to create a smaller runtime which will provide a faster and minor JRE, you can execute the command like below
+
+```shell
+
+jlink --module-path mods --add-modules com.myapp --outup myApp
+
+```
+
+* Different types of modules
+  * **Named module** contains a module-info.java file with the file descriptor
+  * **Automatic module** appears on the module path but does not contain a module-info.java
+    * automatic module will generate the module name automatically. Suppose we have a jar file named my-app-1.0.0.jar. First java will remove the extension .jar from the name. Then java will remove the versions from the end of the JAR filename.
+  * **Unnamed module** appears on the classpath . Like an automatic module it is a regular JAR but unlike an automatic module it is on the classpath rather than the module path.
+    * An unnamed module does not usually contain a module-info.java. If it happens to contain one that file will be ignored since it is on the classpath.
+
