@@ -1,0 +1,160 @@
+---
+layout: post
+title:  "[1z0-829] 13-JDBC"
+date:   2023-01-17 12:18:33 +0100
+categories: 1Z0-829
+---
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
+
+* There are two main ways to get a Connection: DriverManager and DataSource. DriverManager is the one covered on the exam, but do not use it in real life.
+* Always use a try-with-resources with your database resources to ensure that database resources are closed.
+
+```java
+
+  // Simple example
+
+  public class TestConnect {
+    public static void main(String[] args) throws SQLException {
+      try (Connection conn = DriverManager.getConnection("jdbc:hsqldb:file:zoo")) {
+        System.out.println(conn);
+      } 
+    } 
+  }
+
+```
+
+* When you work with PreparedStatements you can do it like below:
+
+```java
+
+// You can do it using your connection
+try (PreparedStatement ps = conn.prepareStatement(
+"SELECT * FROM users")) {
+        
+}
+
+
+// You must always pass a string with the SQL command otherwise it will not compile
+```
+
+* For DELETE , INSERT AND UPDATE operations you use the **PreparedStatement.executeUpdate()**
+* For Reading with SELECT , you use the **PreparedStatement.executeQuery()**
+* You have the option to use the **PreparedStatement.execute()** which can be used for both operations READING AND DELETING.
+* PreparedStatement methods to remember.
+  * setBoolean
+  * setDouble
+  * setInt
+  * setLong
+  * setNull
+  * setObject
+  * setString
+* The setNull() method has a second parameter to define the type of the property
+* Remember that the ResultSet has a cursor and you have to call the method **next()** to be able to move to the next record in the resultSet.
+
+```java
+
+try (var ps = conn.prepareStatement(sql);
+    ResultSet rs = ps.executeQuery()) {
+  
+   while (rs.next()) {
+     int id = rs.getInt("id");
+     String name = rs.getString("name");
+     // logic  
+   }
+ }
+
+```
+
+* You can get the result of your query by name or by int
+
+```java
+  int id = rs.getInt(1);
+  String name = rs.getString(2);
+```
+
+* If you call **res.next()** after you went through all the record it will throw a SQLException
+
+* Remember the getMethods oh the ResultSet
+  * getBoolean
+  * getDouble
+  * getInt
+  * getLong
+  * getObject
+  * getString
+
+* CallableStatement is used in case you need to execute a store procedure
+* Take the example below and check the comments
+
+```java
+// A procedure must be called using the template {call <Procedure Name>}
+var sql = "{call read_names(?)}";
+ try (var cs = conn.prepareCall(sql)) {
+    
+   // Here you define the value of the parameter of the stored procedure
+   cs.setString("prefix", "A");
+   //You could also put the value like
+    //cs.setString("prefix", "Z");
+   try (var rs = cs.executeQuery()) {
+     while (rs.next()) {
+         System.out.println(rs.getString(3));
+     }
+   }
+   
+}
+
+
+```
+
+* In the example above the stored procedure returned a resultSet, while there are storedProcedures that return OUT or INOUT params which you need to register like the example below.
+
+```java
+// Not the ?= represents the OUT poarameter
+var sql = "{?= call magic_number(?) }";
+try (var cs = conn.prepareCall(sql)) {
+  // In this case you register the parameter which is used for input and output and is called INOUT
+  cs.setInt(1, 8);        
+  cs.registerOutParameter(1, Types.INTEGER);
+  cs.execute();
+  System.out.println(cs.getInt("num"));
+}
+```
+
+
+* In case you want to manage you own transactions you have to call the **setAutoCommit(false)**
+
+```java
+
+try (Connection conn =
+ DriverManager.getConnection("jdbc:hsqldb:file:zoo")){
+
+        conn.setAutoCommit(false);
+        
+        
+        //Several prepared statement calls
+        
+        
+        if(goesWell){
+            conn.commit();
+        }else {
+            conn.rollback()
+        }
+
+}
+
+```
+
+* You can also create savePoints for transaction and rollback it's partially using the method **Connection.setSavePoint()** 
+
+```java
+ conn.setAutoCommit(false);
+ Savepoint sp1 = conn.setSavepoint();
+ // database code
+ Savepoint sp2 = conn.setSavepoint("second savepoint");
+ // database code
+ conn.rollback(sp2);
+ // database code
+ conn.rollback(sp1);
+
+```

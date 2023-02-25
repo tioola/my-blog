@@ -1,0 +1,405 @@
+---
+layout: post
+title:  "[1z0-829] 13-IO"
+date:   2023-01-17 12:18:33 +0100
+categories: 1Z0-829
+---
+_These are highlights from a Java 8 developer with years of experience trying to highlight only the important details that we easily miss throughout the time.
+You might think that sometimes is silly to highlight some things but even those things might help you to remember the entire context._
+---
+
+File Path
+
+* When creating a file you can pass the entire path, or also pass the parent file like the examples below
+
+
+```java
+
+File zooFile1 = new File("/home/tiger/data/stripes.txt");
+File zooFile2 = new File("/home/tiger", "data/stripes.txt");
+File parent = new File("/home/tiger");
+File zooFile3 = new File(parent, "data/stripes.txt");
+
+// All of them point to a file in the same location
+
+```
+
+* With Path we can do it like that:
+
+```java
+
+Path zooPath1 = Path.of("/home/tiger/data/stripes.txt");
+Path zooPath2 = Path.of("/home", "tiger", "data", "stripes.txt");
+Path zooPath3 = Paths.get("/home/tiger/data/stripes.txt");
+Path zooPath4 = Paths.get("/home", "tiger", "data", "stripes.txt");
+
+// These methods also point to the same file
+
+//Path.of and Paths.get do the same thing
+
+```
+
+* Remember that for new applications you should rely on NIO2s Path interface
+* Check the difference of code using legacy and NIO2 
+
+
+Legacy way
+```java
+
+ final File file = new File("C:\\opt\\myfile.txt");
+
+  System.out.println(file.exists());
+  System.out.println(file.getAbsoluteFile());
+  System.out.println(file.exists());
+  System.out.println(file.getParent());
+  System.out.println(file.isFile());
+
+```
+
+NIO.2
+
+```java
+
+final Path path = Path.of("C:\\opt\\myfile.txt");
+
+        System.out.println(path.toAbsolutePath());
+        System.out.println(Files.exists(path));
+        System.out.println(Files.isDirectory(path));
+        System.out.println(path.getParent());
+        System.out.println(Files.isRegularFile(path));
+
+```
+
+* If you use Files.list(path) it will open a filesystem connection that must be properly closed like the example below
+
+```java
+
+try (Stream<Path> stream = Files.list(path)) {
+     stream.forEach(p ->
+     System.out.println(" " + p.getName()));
+ }
+
+```
+
+* Files.exists checks if the file exists but if the target is a symbolic link it will check the symbolic link path. In case you want to avoid it use
+
+```java
+
+Files.exists(path. LinkOptions.NOFOLLOW_lINKS)
+
+```
+
+* In Path class, the **toString()** method is the only method that returns a String in the Paths class. It will return the entire path.
+* The Path interface includes de **subpath()** method to select portions of a path. It takes two parameters: **an inclusive beginIndex and an exclusive endIndex**
+
+
+```java
+
+final Path path = Path.of("C:\\opt\\newfolder\\secondnewfolder\\myfile.txt");
+
+System.out.println("subpath(0,3)-> " + path.subpath(0, 3));
+System.out.println("subpath(1,2)-> " + path.subpath(1, 2));
+System.out.println("subpath(1,3)-> " + path.subpath(1, 3));
+
+```
+
+* With Path remember that when you have a relative path, and you call getRoot() it will return null.
+* To concatenate paths you can use the method **resolve()** like the example below.
+
+
+```java
+Path path1 = Path.of("/myfolder/../dog");
+Path path2 = Path.of("food");
+System.out.println(path1.resolve(path2));
+// /cats/../dog/food
+```
+
+* Remember that you cannot use **resolve()** to concatenate two absolute paths.
+* The idea of the **relativize()** method is: if you are pointed at a path in the file system, what steps would you need to take to reach the other path?
+
+```java
+
+// as you can see below you relativize the path of Zoo.java
+var path1 = Path.of("main-method/Zoo.java");
+var path2 = Path.of("text-blocks/TextBlocks.java");
+path1.relativize(path2);        
+
+// ../../text-blocks/TextBlocks.java
+```
+
+* The **normalize()** Method does not remove all of the path symbols, only the ones that can be reduced.
+
+```java
+
+var p2 = Path.of("/dogs/../my/food");
+System.out.println(p2.normalize()); // /panther/food
+        
+var p3 = Path.of("../../myfile.txt");
+System.out.println(p3.normalize()); // ../../myfile.txt
+
+```
+
+* **toRealPath()** will throw an exception if the path does not exist.
+* **Files.createDirectory()** will create a directory and throw an exception if it already exists.
+* The method **Files.copy()** will copy the files from one directory to another
+
+```java
+
+Files.copy(Paths.get("/panda/bamboo.txt"), Paths.get("/panda-save/bamboo.txt"));
+
+```
+
+* When a directory is copied the copy is shallow (means that the files and subdirectories are not copied)
+* If you try to copy a file to a place where a file already exists it will throw an exception unless you use REPLACE_EXISTING
+* An atomic move is one in which a file is moved within the file system as a single indivisible operation.
+* To delete a file you have the **Files.delete()** and **Files.deleteIfExists()**
+* **Files.isSameFile()** is used to determine if a File is the same resolving the symbolic links.(the equals would not work since it does not consider it)
+* **Files.mismatch()** will check if the content of the file is the same, otherwise it wil return -1
+
+----
+
+I/O Streams
+
+* Each type of I/O Stream segments data into a block or wave in a particular way. Other I/O Streams read or write data as individual bytes
+
+```
+                        Here is the reading block
+...00000100100100001000[100000]0100001010111000100000011100010001000100...
+
+```
+
+* Byte Stream vs Character Stream
+  * Byte I/O streams read/write binary data
+  * Character I/O streams read/write data
+  * The API includes similar classes for both, the difference between the two classes is based on how the bytes are read or written.
+  * Byte /IO streams are primaly used to work with binary data, such as an image or executable file while Character for text
+
+* Most Input Stream classes have a corresponding OutputStream class.
+* Low-Level vs High Level Streams
+  * A low-level stream connects directly with the source of the data.
+  * The hight level is build on top oof another I/O stream using a Wrapper class
+
+```java
+// High level       Low Level
+new BufferedReader(new FileReader("my-file.txt"))
+
+```
+
+* In the Example above, the BufferedReader is used for performance reasons.
+* Another Example would be:
+
+```java
+
+try (var ois = new ObjectInputStream(
+    new BufferedInputStream(
+    new FileInputStream("myfile.txt")))) {
+    System.out.print(ois.readObject());
+}
+
+```
+
+* Remember that something that happens a lot in the exam is the fact that they want to trick you, like the example of codes below:
+
+```java
+
+new BufferedInputStream(new FileReader("z.txt")); // DOES NOT COMPILE
+new BufferedWriter(new FileOutputStream("z.txt")); // DOES NOT COMPILE
+new ObjectInputStream(
+new FileOutputStream("z.txt")); // DOES NOT COMPILE
+new BufferedInputStream(new InputStream()); // DOES NOT COMPILE
+
+```
+
+* Below is the list of classes that you should know
+
+**Abstract stream base classes**
+
+| Class Name   |                   Description                   |
+|:-------------|:-----------------------------------------------:|
+| InputStream  |    Abstract class for all input byte streams    |
+| OutputStream |   Abstract class for all output byte streams    |
+| Reader       | Abstract class for all input character streams  |
+| Writer       | Abstract class for all output character streams |
+
+**Concrete I/O Stream classes**
+
+| Class Name           | Low/High Level |                                           Description                                           |
+|:---------------------|:---------------|:-----------------------------------------------------------------------------------------------:|
+| FileInputStream      | Low            |                                    Reads file data as bytes                                     |
+| FileOutputStream     | Low            |                                    Writes file data as bytes                                    |
+| FileReader           | Low            |                                  Reads file data as characters                                  |
+| FileWriter           | Low            |                                 Writes file data as characters                                  |
+| BufferedInputStream  | High           |    Reads byte data from existing Input stream in buffered manner, which improves performance    |
+| BufferedOutputStream | High           |   Writes byte data from existing Input stream in buffered manner, which improves performance    |
+| BufferedReader       | High           | reads character data from existing Input stream in buffered manner, which improves performance  |
+| BufferedWriter       | High           | writes character data from existing Input stream in buffered manner, which improves performance |
+| ObjectInputStream    | High           |  Deserializes primitive java data types and graphs of java objects from existing Input stream   |
+| ObjectOutputStream   | High           |   Serializes primitive java data types and graphs of java objects from existing Input stream    |
+| PrintStream          | High           |                Writes formatted representations of Java objects to binary stream                |
+| PrintWriter          | High           |              Writes formatted representations of Java objects to character stream               |
+
+
+* Remember that InputStream and Reader declare a read() method.
+* Remember that OutputStream and Writer both define a write() method.
+* While reading a file what indicates that the file has endeed is the -1 value which you can see in the example below:
+
+```java
+
+void copyStream(Reader in, Writer out) throws IOException {
+  int b;
+  while ((b = in.read()) != -1) {
+      out.write(b);
+  }
+}
+
+```
+
+* While writing the data you can determine the size of the buffer, which will be used to read/write a batch of bytes like the example below:
+
+```java
+
+ void copyStream(InputStream in, OutputStream out) throws IOException {
+   
+   int batchSize = 1024;
+   var buffer = new byte[batchSize];
+   int lengthRead;
+   
+   while ((lengthRead = in.read(buffer, 0, batchSize)) > 0) {
+     out.write(buffer, 0, lengthRead);
+     out.flush();
+   }
+
+```
+
+* When data is written to an OutputStream the Operating system does not guarantee that the data will make it to the file system immediately. The flush() method will request that but will cause a delay
+* The example above uses low-level which makes it harder to read with buffers. Look at the example below using high level
+
+```java
+
+ void copyTextFile(File src, File dest) throws IOException {
+     try (var reader = new BufferedReader(new FileReader(src));
+        var writer = new BufferedWriter(new FileWriter(dest))) {
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            writer.write(line);
+            writer.newLine();
+} } }
+
+
+```
+
+* The main reason to use printWriter is to get access to printXXX methods like println(). You can essentially use a PrintWriter to write to a file just like you would use System.out to write to the console.
+
+---
+
+NIO.2 
+
+* There are several api`s that facilitate reading and writing to files like
+
+```java
+
+private void copyPathAsBytes(Path input, Path output) throws IOException {
+    byte[] bytes = Files.readAllBytes(input);
+    Files.write(output, bytes);
+}
+private void copyPathAsLines(Path input, Path output) throws IOException {
+    List<String> lines = Files.readAllLines(input);
+    Files.write(output, lines);
+}
+
+```
+
+* Be aware that the entire file is read at once for all of these, therby storing all of the contents of the file in memory at the same time.
+* In the example below the content of the file are read and processed lazily
+
+```java
+
+try (var s = Files.lines(path)) {
+    s.filter(f -> f.startsWith("WARN:"))
+        .map(f -> f.substring(5))
+        .forEach(System.out::println);
+}
+
+```
+
+* You can also use the new API to create your BufferedReader and BufferedWriter like the example above:
+
+
+```java
+
+try (var reader = Files.newBufferedReader(input);
+        var writer = Files.newBufferedWriter(output)) {
+
+```
+
+---
+
+Deserialization
+
+* When you deserialize an object, the constructor of the serialized class along with any instance initializer is not called when the object is created.
+* static or transient fields are ignored
+* Instance initializer also is ignored and do not set anything.
+* The mark() and reset() methods return an I/O Stream to an earlier position. you should call mark.
+
+```java
+
+// Imagine that you receive the InputStream with the value LAMB
+public void readData(InputStream is) throws IOException {
+  System.out.print((char) is.read()); // L
+  
+  if (is.markSupported()) {
+    is.mark(200); // Marks up to 200 bytes
+    System.out.print((char) is.read()); // A
+    System.out.print((char) is.read()); // M
+    is.reset(); // Resets stream to position before A
+  }
+  
+  System.out.print((char) is.read()); // A
+  System.out.print((char) is.read()); // M
+  System.out.print((char) is.read()); // B
+}
+
+```
+
+
+---
+
+* With **Files** we can make some checks about the file type:
+  * Files.isDirectory(Paths.get("..."))
+  * Files.isSymbolicLink(Paths.get("..."))
+  * Files.isRegularFile(Paths.get("..."))
+* We can also do some other kinds of checks like
+  * Files.isHidden(Paths.get("..."))
+  * Files.isReadable(Paths.get("..."))
+  * Files.isWritable(Paths.get("..."))
+  * Files.isWritable(Paths.get("..."))
+* You can do it in a more efficient way getting all the attributes of the file like:
+
+```java
+
+BasicFileAttributes data = Files.readAttributes(path, BasicFileAttributes.class);
+
+
+        System.out.println("directory? " + data.isDirectory());
+        System.out.println("regular file? " + data.isRegularFile());
+        System.out.println("symbolic link? " + data.isSymbolicLink());
+        System.out.println("Size : " + data.size());
+        System.out.println("Last modified: " + data.lastModifiedTime());
+
+```
+
+* Files.walk() is a very interesting method which will walk through all the folders and file based on the starting path you provide.
+
+```java
+
+Files.walk("/home/users/myuser").forEach(System.out::println);
+
+// I can also define a maximum depth for it
+
+Files.walk("/home/users/myuser",4).forEach(System.out::println)
+
+// You can also follow symbolic links but you must be careful while doing it since it might get you in an infinit loop 
+
+```
+
+* The method Files.find() method behaves in a similar manner as the walk() method, except that it takes a BiPredicate to filter the Data.
